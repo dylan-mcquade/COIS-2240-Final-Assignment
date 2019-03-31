@@ -17,4 +17,43 @@ public class Movie {
         this.genre = new SimpleStringProperty(genre);
         this.length = new SimpleObjectProperty<LocalTime>(length);
     }
+
+    public Movie(){
+    }
+
+    public String getTitle() {
+        return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
+    public String getGenre() {
+        return genre.get();
+    }
+
+    public SimpleStringProperty genreProperty() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre.set(genre);
+    }
+
+    public LocalTime getLength() {
+        return length.get();
+    }
+
+    public SimpleObjectProperty<LocalTime> lengthProperty() {
+        return length;
+    }
+
+    public void setLength(LocalTime length) {
+        this.length.set(length);
+    }
 }
