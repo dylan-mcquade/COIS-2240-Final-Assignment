@@ -8,9 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.event.ActionEvent;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
 
@@ -25,6 +23,8 @@ public class Controller implements Initializable {
     private TableColumn<Movie, LocalTime> lengthColumn;
     @FXML
     private Button addMovieButton;
+    @FXML
+    private Button removeMovieButton;
     @FXML
     private Label connection;
     @FXML
@@ -41,16 +41,45 @@ public class Controller implements Initializable {
 
     @FXML
     public void addMovie(ActionEvent event){
-        int hours, minutes;
-        try{
-            hours = Integer.parseInt(hourField.getText());
-            minutes = Integer.parseInt(minuteField.getText());
+        if((titleField.getText() != "")&&(genreField.getText() != "")) {
+            int hours, minutes;
+            try {
+                hours = Integer.parseInt(hourField.getText());
+                minutes = Integer.parseInt(minuteField.getText());
+            } catch (NumberFormatException e) {
+                clearFields();
+                return;
+            }
+            minutes = minutes + (hours * 60);
+            table.getItems().add(new Movie(titleField.getText(), genreField.getText(), model.intToLocalTime(minutes)));
+            String sql = "INSERT INTO Movies(Title,Genre,Length) VALUES(?,?,?)";
+            try (Connection conn = model.getConnection();
+                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                 preparedStatement.setString(1, titleField.getText());
+                 preparedStatement.setString(2, genreField.getText());
+                 preparedStatement.setInt(3, minutes);
+                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        catch (NumberFormatException e){
-            return;
+        clearFields();
+    }
+
+    public void removeMovie(ActionEvent event){
+        Movie movie = table.getSelectionModel().getSelectedItem();
+        table.getItems().remove(movie);
+        String sql = "DELETE FROM Movies WHERE Title = ?";
+        try (Connection conn = model.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, movie.getTitle());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        minutes = minutes + (hours * 60);
-        table.getItems().add(new Movie(titleField.getText(), genreField.getText(),model.intToLocalTime(minutes)));
+    }
+
+    public void clearFields(){
         titleField.setText("");
         genreField.setText("");
         hourField.setText("");

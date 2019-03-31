@@ -19,6 +19,9 @@ public class Movie {
     }
 
     public Movie(){
+        this.title = new SimpleStringProperty();
+        this.genre = new SimpleStringProperty();
+        this.length = new SimpleObjectProperty<LocalTime>();
     }
 
     public String getTitle() {
