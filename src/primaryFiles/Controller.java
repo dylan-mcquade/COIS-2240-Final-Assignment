@@ -11,6 +11,7 @@ import java.net.URL;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Controller implements Initializable {
     @FXML
@@ -98,7 +99,10 @@ public class Controller implements Initializable {
     }
 
     public void randomMovie(){
-        
+        int count;
+        count = table.getItems().size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(0, count);
+        programInformation.setText(data.get(randomIndex).getTitle());
     }
 
     @Override
