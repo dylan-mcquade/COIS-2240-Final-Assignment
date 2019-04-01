@@ -35,18 +35,28 @@ public class Controller implements Initializable {
     private TextField hourField;
     @FXML
     private TextField minuteField;
+    @FXML
+    private TextArea programInformation;
 
     private Model model = new Model();
     private ObservableList<Movie> data;
 
     @FXML
     public void addMovie(ActionEvent event){
-        if((titleField.getText() != "")&&(genreField.getText() != "")) {
+        if(!(titleField.getText().isEmpty()) && !(genreField.getText().isEmpty())){
             int hours, minutes;
             try {
-                hours = Integer.parseInt(hourField.getText());
-                minutes = Integer.parseInt(minuteField.getText());
+                if((Integer.parseInt(hourField.getText()) <24) && (Integer.parseInt(minuteField.getText()) <60)) {
+                    hours = Integer.parseInt(hourField.getText());
+                    minutes = Integer.parseInt(minuteField.getText());
+                }
+                else{
+                    programInformation.setText("\"Duration : Hours\" cannot be greater than 23 and \"Duration : Minutes\" cannot be greater than 59");
+                    return;
+                }
             } catch (NumberFormatException e) {
+                programInformation.setText("\"Duration : Hours\" and \"Duration : Minutes\" must be filled out using digits 0 through 9. " +
+                        "Letters and other symbols are not supported");
                 clearFields();
                 return;
             }
@@ -63,6 +73,7 @@ public class Controller implements Initializable {
                 System.out.println(e.getMessage());
             }
         }
+        programInformation.setText("\"Title\" and \"Genre\" must be filled out.");
         clearFields();
     }
 
@@ -84,6 +95,10 @@ public class Controller implements Initializable {
         genreField.setText("");
         hourField.setText("");
         minuteField.setText("");
+    }
+
+    public void randomMovie(){
+        
     }
 
     @Override

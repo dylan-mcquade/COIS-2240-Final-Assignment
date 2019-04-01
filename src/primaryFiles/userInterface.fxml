@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -46,6 +48,17 @@
                </children>
             </VBox>
             <Button fx:id="removeMovieButton" mnemonicParsing="false" onAction="#removeMovie" text="Remove Movie" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <TextArea fx:id="programInformation" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.rowIndex="3" />
+            <Label text="Important information will be displayed in the box to the left." wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="To remove a movie find in in the table to the left, click on it and then click the &quot;Remove Movie&quot; button." wrapText="true" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
+               </GridPane.margin>
+            </Label>
          </children>
       </GridPane>
    </children>
