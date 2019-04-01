@@ -10,6 +10,8 @@ import javafx.event.ActionEvent;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -38,9 +40,11 @@ public class Controller implements Initializable {
     private TextField minuteField;
     @FXML
     private TextArea programInformation;
+    @FXML
+    private TextField genreChoice;
 
     private Model model = new Model();
-    private ObservableList<Movie> data;
+    private ObservableList<Movie> movieList;
 
     @FXML
     public void addMovie(ActionEvent event){
@@ -70,6 +74,7 @@ public class Controller implements Initializable {
                  preparedStatement.setString(2, genreField.getText());
                  preparedStatement.setInt(3, minutes);
                  preparedStatement.executeUpdate();
+                 return;
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -78,16 +83,19 @@ public class Controller implements Initializable {
         clearFields();
     }
 
+    //Breaks when you try to remove more than 1 movie each time the program runs. Look into why.
     public void removeMovie(ActionEvent event){
-        Movie movie = table.getSelectionModel().getSelectedItem();
-        table.getItems().remove(movie);
-        String sql = "DELETE FROM Movies WHERE Title = ?";
-        try (Connection conn = model.getConnection();
-             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, movie.getTitle());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        if(table.getSelectionModel().getSelectedItem() != null){
+            Movie movie = table.getSelectionModel().getSelectedItem();
+            table.getItems().remove(movie);
+            String sql = "DELETE FROM Movies WHERE Title = ?";
+            try (Connection conn = model.getConnection();
+                 PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, movie.getTitle());
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -102,7 +110,19 @@ public class Controller implements Initializable {
         int count;
         count = table.getItems().size();
         int randomIndex = ThreadLocalRandom.current().nextInt(0, count);
-        programInformation.setText(data.get(randomIndex).getTitle());
+        programInformation.setText(movieList.get(randomIndex).getTitle());
+    }
+
+    public void randomMovieGenre(){
+        List<Movie> genreList = new ArrayList<Movie>();
+        for(Movie m : movieList){
+            if (m.getGenre().equals(genreChoice.getText())){
+                genreList.add(m);
+            }
+        }
+        int count = genreList.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(0,count);
+        programInformation.setText(genreList.get(randomIndex).getTitle());
     }
 
     @Override
@@ -124,7 +144,7 @@ public class Controller implements Initializable {
     public void buildData(){
         Connection conn = model.getConnection();
         try {
-            data = FXCollections.observableArrayList();
+            movieList = FXCollections.observableArrayList();
             String sql = "SELECT * FROM Movies";
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(sql);
@@ -133,13 +153,13 @@ public class Controller implements Initializable {
                 movie.setTitle(rs.getString("Title"));
                 movie.setGenre(rs.getString("Genre"));
                 movie.setLength(model.intToLocalTime(rs.getInt("Length")));
-                data.add(movie);
+                movieList.add(movie);
             }
-            table.setItems(data);
+            table.setItems(movieList);
         }
         catch(Exception e){
             e.printStackTrace();
-            System.out.println("Error building data");
+            System.out.println("Error building movieList");
         }
     }
 }
