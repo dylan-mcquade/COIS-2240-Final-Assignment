@@ -15,6 +15,10 @@ public class Model {
         }
     }
 
+    public void reconnect(){
+        connection = DatabaseConnection.connect();
+    }
+
     public boolean isConnected() {
         try {
             return !connection.isClosed();

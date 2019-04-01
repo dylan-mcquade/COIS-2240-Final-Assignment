@@ -48,6 +48,7 @@ public class Controller implements Initializable {
 
     @FXML
     public void addMovie(ActionEvent event){
+        model.reconnect();
         if(!(titleField.getText().isEmpty()) && !(genreField.getText().isEmpty())){
             int hours, minutes;
             try {
@@ -85,6 +86,7 @@ public class Controller implements Initializable {
 
     //Breaks when you try to remove more than 1 movie each time the program runs. Look into why.
     public void removeMovie(ActionEvent event){
+        model.reconnect();
         if(table.getSelectionModel().getSelectedItem() != null){
             Movie movie = table.getSelectionModel().getSelectedItem();
             table.getItems().remove(movie);
