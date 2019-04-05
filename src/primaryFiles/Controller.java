@@ -53,6 +53,8 @@ public class Controller implements Initializable {
     //model is used to access methods in the Model class which control program locic. The "model" in MVC.
     private Model model = new Model();
     private ObservableList<Movie> movieList;
+    //Maintain list of title in the database so that they aren't duplicated.
+    private ArrayList<String> titleList;
 
     //If a user has all 4 fields (movie title, movie genre, hours in length, minutes in length) and presses the "Add Movie" button this method will add a movie with
     //the given information both into the table for use with this session and into the database so it will be available on later uses.
@@ -60,10 +62,16 @@ public class Controller implements Initializable {
     public void addMovie(ActionEvent event){
         //Establish the connection to the database.
         model.reconnect();
+        //Check to make sure that the title entered is not already in the table (by using titleList).
+        if(titleList.contains(titleField.getText())){
+            programInformation.setText("A movie of that title already exists. Movie titles must be unique.");
+            clearFields();
+            return;
+        }
         //Check to make sure that the title and genre are provided.
         if(!(titleField.getText().isEmpty()) && !(genreField.getText().isEmpty())){
             int hours, minutes;
-            //Make sure that the lengths provided are given in integers. Hours have to be less than 24, minutes less than 60.
+            //Makes sure that the lengths provided are given in integers. Hours have to be less than 24, minutes less than 60.
             //If the lengths are valid then hours and minutes will hold them before they are put into the table and database.
             try {
                 if((Integer.parseInt(hourField.getText()) <24) && (Integer.parseInt(minuteField.getText()) <60)) {
@@ -85,6 +93,7 @@ public class Controller implements Initializable {
             //Length in the database is stored as a single integer, the total number of minutes.
             minutes = minutes + (hours * 60);
             table.getItems().add(new Movie(titleField.getText(), genreField.getText(), model.intToLocalTime(minutes)));
+            titleList.add(titleField.getText());
             String sql = "INSERT INTO Movies(Title,Genre,Length) VALUES(?,?,?)";
             try (Connection conn = model.getConnection();
                  PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -112,6 +121,7 @@ public class Controller implements Initializable {
             //Use a movie variable and set it to the selected movie. Use this to remove it from the table and use it's title to remove it from the database.
             Movie movie = table.getSelectionModel().getSelectedItem();
             table.getItems().remove(movie);
+            titleList.remove(movie.getTitle());
             String sql = "DELETE FROM Movies WHERE Title = ?";
             try (Connection conn = model.getConnection();
                  PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
@@ -188,6 +198,7 @@ public class Controller implements Initializable {
     //Runs when program starts.
     @Override
     public void initialize(URL location, ResourceBundle rb){
+        titleList = new ArrayList<String>();
         //Set up the three columns of the table.
         titleColumn.setCellValueFactory(new PropertyValueFactory<Movie, String>("title"));
         genreColumn.setCellValueFactory(new PropertyValueFactory<Movie, String>("genre"));
@@ -213,6 +224,7 @@ public class Controller implements Initializable {
                 movie.setGenre(rs.getString("Genre"));
                 movie.setLength(model.intToLocalTime(rs.getInt("Length")));
                 movieList.add(movie);
+                titleList.add(movie.getTitle());
             }
             //Add the movies in movieList to the table.
             table.setItems(movieList);

@@ -26,10 +26,12 @@ public class Movie {
         this.length = new SimpleObjectProperty<LocalTime>();
     }
 
-
-    //Getters and setters.
     public String getTitle() {
         return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
+        return title;
     }
 
     public void setTitle(String title) {
@@ -40,8 +42,20 @@ public class Movie {
         return genre.get();
     }
 
+    public SimpleStringProperty genreProperty() {
+        return genre;
+    }
+
     public void setGenre(String genre) {
         this.genre.set(genre);
+    }
+
+    public LocalTime getLength() {
+        return length.get();
+    }
+
+    public SimpleObjectProperty<LocalTime> lengthProperty() {
+        return length;
     }
 
     public void setLength(LocalTime length) {
