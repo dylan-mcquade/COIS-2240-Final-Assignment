@@ -81,6 +81,7 @@ public class Controller implements Initializable {
                 //If the lengths are too long programInformation will be updated with a warning that tells the user the max times.
                 else{
                     programInformation.setText("\"Duration : Hours\" cannot be greater than 23 and \"Duration : Minutes\" cannot be greater than 59");
+                    clearFields();
                     return;
                 }
             //If the lengths aren't integers programInformation will be updated with a warning that tells the user that they may only enter integers.
